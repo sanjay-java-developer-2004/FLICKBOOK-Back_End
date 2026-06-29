@@ -1,0 +1,38 @@
+package com.example.FLICKBOOK.Controller.BookingController;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.FLICKBOOK.Service.ServiceInter.QRCodeService;
+import com.example.FLICKBOOK.Service.ServiceInter.WhatsAppService;
+
+
+
+@RestController
+@CrossOrigin(origins="*")
+@RequestMapping("/Booking")
+public class SeatBookingController {
+    
+
+    @Autowired
+    private QRCodeService qrcodeservice;
+
+    @Autowired
+    private WhatsAppService whatsAppService;
+
+    @PatchMapping("/pay-booking")
+    public Object PayNow(@RequestBody Map<String,Object> datas) throws Exception{
+        
+     return whatsAppService.SendToWhatsApp(datas);
+        
+    }
+
+
+
+}
