@@ -12,26 +12,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.FLICKBOOK.Exception.SeatException;
 import com.example.FLICKBOOK.Model.Seat;
 import com.example.FLICKBOOK.Service.ServiceInter.SeatService;
 
-@RestController
-@CrossOrigin(origins="*")
+@RestController 
+@CrossOrigin(origins = "*")
 @RequestMapping("/seats")
 public class SeatController {
 
     @Autowired
     private SeatService seatservice;
 
-
     @GetMapping("/seat/{showid}")
-    public List<Seat> GetSeats(@PathVariable Integer showid) throws Exception {
+    public List<Seat> GetSeats(@PathVariable Integer showid) throws SeatException {
         return seatservice.GetSeats(showid);
     }
 
     @PatchMapping("/book")
     public String bookSeats(@RequestBody Map<String, Object> data) {
 
-    return seatservice.bookSeats(data);
-}
+        return seatservice.bookSeats(data);
+    }
+
+    @PatchMapping("/release")   
+    public String releaseSeats(@RequestBody Map<String, Object>seatids) throws SeatException {
+
+      return seatservice.releaseSeats(seatids);
+      
+    }
 }

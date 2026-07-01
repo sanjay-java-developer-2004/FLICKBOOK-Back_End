@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.FLICKBOOK.Enum.MovieStatus;
 import com.example.FLICKBOOK.Enum.SeatStatus;
+import com.example.FLICKBOOK.Exception.AuthException;
 import com.example.FLICKBOOK.Model.Movie;
 import com.example.FLICKBOOK.Model.Seat;
 import com.example.FLICKBOOK.Model.Show;
@@ -32,15 +33,14 @@ public class AuthServiceImplement implements AuthService {
   private  MovieRepository movierepository;
 
  @Override
-public Object getDashBoard(Integer theatreid) throws Exception {
+public Object getDashBoard(Integer theatreid) throws AuthException{
 
     List<Show> shows = showrepository.findByTheatre_Theaterid(theatreid);
 
-    System.out.println("Theatre id : "+theatreid);
     ArrayList<Map<String, Object>> finalresponse = new ArrayList<>();  
 
     if (shows.isEmpty()) {
-        throw new RuntimeException("Shows Not Available For This Theatre");
+        throw new  AuthException("Shows Not Available For This Theatre");
     }
 
     for (Show temp : shows) {
@@ -62,10 +62,6 @@ public Object getDashBoard(Integer theatreid) throws Exception {
             response.put("Available",     availableSeats.size());  
             response.put("Price",         price);
 
-            System.out.println("show " + showDateTime);
-            System.out.println("Total "+totalSeats.size());
-            System.out.println("Booked "+bookedSeats.size());
-            System.out.println("available "+availableSeats.size());
             
             finalresponse.add(response);  
         }

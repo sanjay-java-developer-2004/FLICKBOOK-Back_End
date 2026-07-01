@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.FLICKBOOK.Enum.PaymentStatus;
 import com.example.FLICKBOOK.Enum.SeatStatus;
+import com.example.FLICKBOOK.Exception.BookingException;
 import com.example.FLICKBOOK.Model.Booking;
 import com.example.FLICKBOOK.Model.Payment;
 import com.example.FLICKBOOK.Model.Seat;
@@ -45,7 +46,7 @@ public class SeatBookingServiceImplement implements SeatBookingService {
 
     @Transactional
     @Override
-    public Object PayNow(Map<String, Object> datas) {
+    public Object PayNow(Map<String, Object> datas) throws BookingException {
 
         Integer showid = Integer.valueOf(datas.get("showId").toString());
         List<Integer> seatids = (List<Integer>) datas.get("seatIds");
@@ -58,15 +59,15 @@ public class SeatBookingServiceImplement implements SeatBookingService {
         for (Integer seatid : seatids) {
 
             Seat seat = seatrepository.findByShow_ShowidAndSeatid(showid, seatid)
-                    .orElseThrow(() -> new RuntimeException("Seats Not Founded For this SeatNumber"));
+                    .orElseThrow(() -> new BookingException("Seats Not Founded For this SeatNumber"));
 
             if (seat.getSeatstatus() == SeatStatus.Booked) {
-                throw new RuntimeException("Sorry This Seat " + seat.getSeatnumber() + " Is Already Booked");
+                throw new BookingException("Sorry This Seat " + seat.getSeatnumber() + " Is Already Booked");
             }
 
 
             if (seat.getSeatstatus() == SeatStatus.Available) {
-                throw new RuntimeException(
+                throw new BookingException(
                         "The Seat " + seat.getSeatnumber() + " Is Not Hold Pls Hold Your Seat First");
             }
 
@@ -83,9 +84,9 @@ public class SeatBookingServiceImplement implements SeatBookingService {
         
         if (totalamount == fronttotal) {
             seatrepository.saveAll(bookedseats);
-            System.out.println("Seat Saved");
+       
         } else {
-            throw new RuntimeException(
+            throw new BookingException(
                     "Sorry, we're experiencing some payment issues. We'll fix them soon. Please try again after a few minutes."
                             + "front " + fronttotal + " " + "back " + totalamount);
         }
@@ -93,15 +94,16 @@ public class SeatBookingServiceImplement implements SeatBookingService {
         Optional<Show> show1 = showrepository.findById(showid);
 
         if (show1.isEmpty()) {
-            throw new RuntimeException("Show Details Not Founded For This Id");
+            throw new BookingException("Show Details Not Founded For This Id");
         }
         Show show = show1.get();
 
         if (datas.get("PaymentMethod") == null) {
-            throw new RuntimeException("Payment Not Founded");
+            throw new BookingException("Payment Not Founded");
         }
+        
         if(userid.isEmpty()){
-            throw new RuntimeException("Your Account Is Not Logined PLs Login First! ....");
+            throw new BookingException("Your Account Is Not Logined PLs Login First! ....");
         }
 
         
@@ -133,8 +135,6 @@ public class SeatBookingServiceImplement implements SeatBookingService {
 
         response.put("booking",bookingdetails);
         response.put("payment",entry);
-
-        System.out.println("Booking and Payment Saved Successfully");
         
         return response;
 

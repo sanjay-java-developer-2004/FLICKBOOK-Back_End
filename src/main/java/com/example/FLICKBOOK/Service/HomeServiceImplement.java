@@ -33,7 +33,7 @@ public class HomeServiceImplement implements HomeService {
         @Autowired
         private ShowRepository showrepository;
 
-        //NEW RELEASE
+        // NEW RELEASE
 
         @Override
         public List<Movie> getNewReleaseMovies(String location)
@@ -45,13 +45,13 @@ public class HomeServiceImplement implements HomeService {
 
                 if (movies.isEmpty()) {
                         throw new HomeException(
-                                        "No New Release Movies Found");
+                                        "No New Release Movies Found At This Location");
                 }
 
                 return movies;
         }
 
-        //COMMING SOON
+        // COMMING SOON
 
         @Override
         public List<Movie> getComingSoonMovies(String location)
@@ -61,17 +61,15 @@ public class HomeServiceImplement implements HomeService {
                                 location,
                                 MovieStatus.upcoming);
 
-                System.out.println("Comming : " + movies);
-
                 if (movies.isEmpty()) {
                         throw new HomeException(
-                                        "No Upcoming Movies Found");
+                                        "No Upcoming Movies Found At This Location");
                 }
 
                 return movies;
         }
 
-      //SEARCH
+        // SEARCH
 
         @Override
         public Map<String, Object> searchMovieAndTheatre(String keyword) throws HomeException {
@@ -85,39 +83,37 @@ public class HomeServiceImplement implements HomeService {
 
                         result.put("movies", Collections.singletonList(movieSearch.get()));
 
-                        System.out.println("Movie Shows Added : " + movieSearch);
                 }
 
                 // Theatre Search
-                
+
                 Optional<Theatre> theatreSearch = theatrerepository.findByTheaternameIgnoreCase(keyword);
-       
+
                 if (theatreSearch.isPresent()) {
 
                         List<Show> theatreShows = showrepository.findByTheatre_TheateridAndShowdate(
-                                        theatreSearch.get().getTheaterid(),LocalDate.now());
+                                        theatreSearch.get().getTheaterid(), LocalDate.now());
 
                         List<Show> finaltheatreshows = new ArrayList<>();
 
-                        for(Show show:theatreShows){
-                        LocalDateTime showDateTime =
-                        LocalDateTime.of(show.getShowdate(), show.getShowtime());
+                        for (Show show : theatreShows) {
+                                LocalDateTime showDateTime = LocalDateTime.of(show.getShowdate(), show.getShowtime());
 
-                        if (LocalDateTime.now().isBefore(showDateTime.plusMinutes(30))){
-                                finaltheatreshows.add(show);
-                        }
+                                if (LocalDateTime.now().isBefore(showDateTime.plusMinutes(30))) {
+                                        finaltheatreshows.add(show);
+                                }
                         }
 
                         result.put("theatres", finaltheatreshows);
 
-                        System.out.println("Theatre Shows Added : " + theatreShows.size());
                 }
 
                 if (result.isEmpty()) {
 
-                        result.put("message", "No Movies Or Theatre Founded For " + keyword);
+                        throw new HomeException("No Movies Or Theatre Founded For " + keyword );
 
                 }
+
 
                 return result;
         }

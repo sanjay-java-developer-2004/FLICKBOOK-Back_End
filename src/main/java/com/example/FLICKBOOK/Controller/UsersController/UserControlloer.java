@@ -29,12 +29,6 @@ public class UserControlloer {
 
     }
 
-    // //login User
-    // @PostMapping("/login")
-    // public String LoginUser(@RequestBody User loginuser) throws UserException{
-    // return userService.LoginUser(loginuser);
-
-    // }
 
     // Controller — change String to Object
     @PostMapping("/login")

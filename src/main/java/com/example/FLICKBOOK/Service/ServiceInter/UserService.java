@@ -11,13 +11,8 @@ public interface UserService {
     // register user
     public Object registerUser(User registeruser) throws UserException;
 
-    // //login user
-    // public String LoginUser( User loginuser) throws UserException;
-
-    // Service Interface — change String to Object
-    
-        Object LoginUser(User loginuser) throws UserException; // ✅ Object not String
-   
+    //Login User
+    Object LoginUser(User loginuser) throws UserException; 
 
     // delete user
     public String deleteUser(Integer deleteUser) throws UserException;

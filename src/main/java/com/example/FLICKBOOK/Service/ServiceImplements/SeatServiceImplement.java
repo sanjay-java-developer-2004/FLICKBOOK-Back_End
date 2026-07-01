@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.FLICKBOOK.Enum.SeatStatus;
+import com.example.FLICKBOOK.Exception.SeatException;
 import com.example.FLICKBOOK.Model.Seat;
 import com.example.FLICKBOOK.Repository.SeatRepository;
 import com.example.FLICKBOOK.Service.ServiceInter.SeatService;
@@ -23,7 +24,7 @@ public class SeatServiceImplement implements SeatService {
 
   // get seats
   @Override
-  public List<Seat> GetSeats(Integer showid) throws Exception {
+  public List<Seat> GetSeats(Integer showid) throws SeatException {
 
     List<Seat> temp = seatrepository.findByShow_Showid(showid);
 
@@ -49,14 +50,13 @@ public class SeatServiceImplement implements SeatService {
 
       return response;
     } else {
-      throw new Exception("Show Not Founded");
+      throw new SeatException("Show Not Founded");
     }
   }
 
-  
   // Hold seats
 
-  public String bookSeats(Map<String, Object> data) {
+  public String bookSeats(Map<String, Object> data) throws SeatException {
 
     Integer showId = Integer.valueOf(data.get("showId").toString());
 
@@ -66,46 +66,86 @@ public class SeatServiceImplement implements SeatService {
 
       Seat seat = seatrepository
           .findByShow_ShowidAndSeatid(showId, seatId)
-          .orElseThrow(() -> new RuntimeException("Seat not found"));
+          .orElseThrow(() -> new SeatException("Seat not found"));
 
       if (seat.getSeatstatus() == SeatStatus.Booked) {
-        throw new RuntimeException("Seat already booked");
+        throw new SeatException("Seat already booked");
       }
 
       if (seat.getSeatstatus() == SeatStatus.Hold) {
-        throw new RuntimeException(
-            seat.getSeatnumber() + " is hold");
+        throw new SeatException(
+            seat.getSeatnumber() + " is Already hold pls Choos Other Seat`");
       }
-      
+
       seat.setSeatstatus(SeatStatus.Hold);
       seat.setHoldtime(LocalDateTime.now());
       seatrepository.save(seat);
     }
-
 
     return "Seats Holded Successfully";
   }
 
   // UnHold Automatically
 
-@Scheduled(fixedRate=60000)
-public void UnHold(){
+  @Scheduled(fixedRate = 60000)
+  public void UnHold() {
 
-List<Seat> temp = seatrepository.findBySeatstatus(SeatStatus.Hold);
+    List<Seat> temp = seatrepository.findBySeatstatus(SeatStatus.Hold);
 
- if(!temp.isEmpty()){
-  for(Seat seat:temp){
-   Long expiry = ChronoUnit.MINUTES.between(seat.getHoldtime(),LocalDateTime.now());
+    if (!temp.isEmpty()) {
+      for (Seat seat : temp) {
+        Long expiry = ChronoUnit.MINUTES.between(seat.getHoldtime(), LocalDateTime.now());
 
-   if(expiry>=5){
-    seat.setSeatstatus(SeatStatus.Available);
-    seat.setHoldtime(null);
-    seatrepository.save(seat);
-  
-   }
+        if (expiry >= 5) {
+          seat.setSeatstatus(SeatStatus.Available);
+          seat.setHoldtime(null);
+          seatrepository.save(seat);
+
+        }
+
+      }
+    }
+  }
+
+  // unhold mannuly
+
+  @Override
+  public String releaseSeats(Map<String, Object> seatids) throws SeatException {
+
+    List<?> seats = (List<?>) seatids.get("seatIds");
+
+    if (seats.isEmpty()) {
+
+      throw new SeatException("Seat Id Not Founded");
+
+    } else {
+
+      for (Object id : seats) {
+
+        Integer seatId = ((Number) id).intValue();
+
+        Seat seat = seatrepository.findById(seatId)
+            .orElseThrow(() -> new SeatException("Seat not found"));
+
+        if (seat.getSeatstatus() == SeatStatus.Booked) {
+          throw new SeatException("Seat already booked");
+
+        }
+        if (seat.getSeatstatus() == SeatStatus.Available) {
+          throw new SeatException("Seat is Already Available");
+        }
+
+        if (seat.getSeatstatus() == SeatStatus.Hold) {
+          seat.setSeatstatus(SeatStatus.Available);
+          seatrepository.save(seat);
+          return "Seat UnHold SuccessFully";
+        }
+
+      }
+      throw new SeatException("Something Wrong ...");
+
+    }
 
   }
-}
-}
 
 }

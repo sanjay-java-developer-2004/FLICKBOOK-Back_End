@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.FLICKBOOK.Exception.ShowException;
 import com.example.FLICKBOOK.Model.Show;
 import com.example.FLICKBOOK.Service.ServiceInter.ShowService;
 
@@ -31,14 +32,14 @@ public class ShowController {
     public String AddShows(@RequestBody Show show , 
                                @RequestParam String tname,
                                @RequestParam String mname,
-                               @RequestParam Integer tid )throws Exception {
+                               @RequestParam Integer tid )throws ShowException {
             return showservice.AddShows(show, tname, mname,tid);
 
     }
 
   //get shows
     @GetMapping("getshows/{movieid}/shows")
-    public List<Map<String,Object>> getTheatresAndShows(@PathVariable Integer movieid, @RequestParam LocalDate date) throws  Exception {
+    public List<Map<String,Object>> getTheatresAndShows(@PathVariable Integer movieid, @RequestParam LocalDate date) throws  ShowException {
         return showservice.getTheatresAndShows(movieid,date);
     }
     
