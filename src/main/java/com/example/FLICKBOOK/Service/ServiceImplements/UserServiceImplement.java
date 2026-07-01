@@ -12,7 +12,6 @@ import com.example.FLICKBOOK.Model.Theatre;
 import com.example.FLICKBOOK.Model.User;
 import com.example.FLICKBOOK.Repository.TheatreRepository;
 import com.example.FLICKBOOK.Repository.UserRepository;
-import com.example.FLICKBOOK.Security.LoginSecurityJWT;
 import com.example.FLICKBOOK.Service.ServiceInter.UserService;
 
 @Service
@@ -24,8 +23,8 @@ public class UserServiceImplement implements UserService {
     @Autowired
     private TheatreRepository theatrreepository;
 
-    @Autowired
-    private LoginSecurityJWT loginsecurityjwt;
+    // @Autowired
+    // private LoginSecurityJWT loginsecurityjwt;
 
     // register
     @Override
@@ -35,7 +34,6 @@ public class UserServiceImplement implements UserService {
             throw new UserException("User data must not be null");
         }
 
-        System.out.println("Register user not null");
 
         // Check for real null, empty strings, and the literal string "null"
         if (registeruser.getUsername().trim().isEmpty() || registeruser.getUsername().equalsIgnoreCase("null")
@@ -47,7 +45,6 @@ public class UserServiceImplement implements UserService {
             throw new UserException("The Value must not be null or empty");
         }
 
-        System.out.println("details not null");
 
         Optional<User> temp = userRepository.findByUsername(registeruser.getUsername());
 
@@ -55,10 +52,9 @@ public class UserServiceImplement implements UserService {
             throw new UserException("User already exists with this username. Try another username.");
         }
 
-        System.out.println("username not contain ");
 
         User stored = userRepository.save(registeruser);
-        System.out.println("saved");
+
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("userid", stored.getUserid());
@@ -69,6 +65,10 @@ public class UserServiceImplement implements UserService {
         return response;
 
     }
+
+
+
+
 
     // delete
     @Override
@@ -86,6 +86,11 @@ public class UserServiceImplement implements UserService {
     }
 
 
+
+
+
+
+    //LOGIN USER
     
     @Override
     public Object LoginUser(User loginuser) throws UserException {
@@ -97,24 +102,21 @@ public class UserServiceImplement implements UserService {
 
         //jwt token generation
 
-        loginsecurityjwt.GenerateToken(temp.getUsername());
+        // loginsecurityjwt.GenerateToken(temp.getUsername());
 
         
         // find theatre linked to this user
         Theatre theatre = theatrreepository.findByUser_Userid(temp.getUserid());
 
         Map<String, Object> response = new LinkedHashMap<>();
-        response.put("username", temp.getUsername());  // ✅ for context
-        response.put("userid", temp.getUserid());      //
-         response.put("role", temp.getRole());          // ✅ for redirect
+        response.put("username", temp.getUsername());               // ✅ for context
+        response.put("userid", temp.getUserid());                  //
+        response.put("role", temp.getRole());                     // ✅ for redirect
         response.put("theatreid",
-        theatre != null ? theatre.getTheaterid() : null);           // ✅ null if user or new admin
+        theatre != null ? theatre.getTheaterid() : null);            // ✅ null if user or new admin
 
         response.put("theatrename", theatre !=null ? theatre.getTheatername() : null);
 
-        System.out.println("Userid : " +temp.getUserid());
-        System.out.println("Username : "+temp.getUsername());
-        System.out.println("role : "+temp.getRole());
 
         return response;
 

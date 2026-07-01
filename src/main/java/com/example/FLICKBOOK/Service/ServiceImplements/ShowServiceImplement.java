@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.FLICKBOOK.Enum.SeatStatus;
 import com.example.FLICKBOOK.Enum.ShowStatus;
+import com.example.FLICKBOOK.Exception.ShowException;
 import com.example.FLICKBOOK.Model.Movie;
 import com.example.FLICKBOOK.Model.Seat;
 import com.example.FLICKBOOK.Model.Show;
@@ -43,29 +44,22 @@ public class ShowServiceImplement implements ShowService {
     // AddShows
     @Transactional
     @Override
-    public String AddShows(Show show, String tname, String mname, Integer tid) throws Exception {
+    public String AddShows(Show show, String tname, String mname, Integer tid) throws ShowException {
 
-        System.out.println("THEATRE NAME " + tname);
-        System.out.println("MOVIE NAME " + mname);
-        System.out.println("Date : " + show.getShowdate());
-        System.out.println("Time :" + show.getShowtime());
 
         if (show.getShowtime() != null && mname != null && tname != null && show.getShowdate() != null) {
 
             Optional<Movie> movie1 = movierepository.findByMovienameIgnoreCase(mname.trim());
 
-            // Optional<Theatre> theatre1 =
-            // theatreRepository.findByTheaternameIgnoreCase(tname.trim());
 
             Optional<Theatre> theatre0 = theatreRepository.findByTheateridAndTheaternameIgnoreCase(tid, tname.trim());
-            System.out.println("tid " + tid);
-            System.out.println("tname " + tname);
+
             if (movie1.isEmpty() || theatre0.isEmpty()) {
-                throw new Exception("Movie or Theatre Not Available At This Name");
+                throw new ShowException ("Movie or Theatre Not Available At This Name");
             }
 
             if (movie1.get().getMovieid() == null || theatre0.get().getTheaterid() == null) {
-                throw new Exception("ID NOT FOUNDED");
+                throw new ShowException ("ID NOT FOUNDED");
             }
 
             Movie movie2 = movie1.get();
@@ -85,7 +79,7 @@ public class ShowServiceImplement implements ShowService {
             int seatsPerRow = 25;
             int totalSeats = theatre0.get().getTotalseats();
 
-            System.out.println("total sets : " + totalSeats);
+
             int rows = (int) Math.ceil((double) totalSeats / seatsPerRow);
 
             char row = 'A';
@@ -113,7 +107,7 @@ public class ShowServiceImplement implements ShowService {
             return "Show And Seat Added Successfully";
 
         } else {
-            throw new Exception("ShoW Details Is Null");
+            throw new ShowException ("ShoW Details Is Null");
         }
     }
 
@@ -126,12 +120,12 @@ public class ShowServiceImplement implements ShowService {
     // getshows
 
     @Override
-    public List<Map<String, Object>> getTheatresAndShows(Integer movieid, LocalDate date) throws Exception {
+    public List<Map<String, Object>> getTheatresAndShows(Integer movieid, LocalDate date) throws ShowException  {
 
         List<Show> shows = showrepository.findByMovie_MovieidAndShowdate(movieid, date);
 
         if (shows.isEmpty()) {
-            throw new Exception("Show not last founded");
+            throw new ShowException ("No shows available for this date  ");
         }
 
         Map<Integer, Map<String, Object>> theatreMap = new LinkedHashMap<>();
@@ -177,38 +171,9 @@ public class ShowServiceImplement implements ShowService {
 
         // All shows expired
         if (theatreMap.isEmpty()) {
-            throw new Exception("Show not founded");
+            throw new ShowException ("Show not founded shows Are Expired pls Try Later");
         }
 
         return new ArrayList<>(theatreMap.values());
     }
 }
-
-// // delete show
-
-// @PostConstruct
-// public void DeleteShow() {
-
-// try {
-
-// List<Show> temp = showrepository.findAll();
-
-// for (Show show : temp) {
-
-// if (show.getShowdate() == null || show.getShowtime() == null) {
-// continue;
-// }
-
-// LocalDateTime showDateTime = LocalDateTime.of(show.getShowdate(),
-// show.getShowtime());
-
-// if (LocalDateTime.now().isAfter(showDateTime.plusMinutes(30))) {
-// seatrepository.deleteByShow(show);
-// showrepository.deleteById(show.getShowid());
-// }
-// }
-
-// } catch (Exception e) {
-// e.printStackTrace();
-// }
-// }

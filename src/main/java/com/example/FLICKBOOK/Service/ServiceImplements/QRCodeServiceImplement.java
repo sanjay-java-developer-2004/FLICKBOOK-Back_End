@@ -37,7 +37,6 @@ public class QRCodeServiceImplement implements QRCodeService {
 
         Ticket res = (Ticket) ticketservice.StoreTickets(response);
 
-        System.out.println("Response geted  from ticket");
 
         String mname = res.getBooking().getShow().getMovie().getMoviename();
         String tname = res.getBooking().getShow().getTheatre().getTheatername();
@@ -48,14 +47,13 @@ public class QRCodeServiceImplement implements QRCodeService {
 
         String formattedTime = stime.format(DateTimeFormatter.ofPattern("hh:mm a"));
 
-        System.out.println("response stored to temp map");
 
         String seatNumbers = seat.stream()
                 .map(Seat::getSeatnumber)
                 .reduce((a, b) -> a + "," + b)
                 .orElse("");
 
-        System.out.println("seats conver to string");
+
 
         Map<String, Object> qrdatas = new HashMap<>();
 
@@ -66,13 +64,10 @@ public class QRCodeServiceImplement implements QRCodeService {
         qrdatas.put("TicketNumber", tikno);
         qrdatas.put("TicketStatus", status);
 
-        System.out.println("response convert to map successfully");
-        // System.out.println("QR DATAS : "+qrdatas );
 
         QRCodeWriter qrwriter = new QRCodeWriter();
 
-        System.out.println(qrdatas.toString());
-        System.out.println(qrdatas.toString().length());
+
 
         BitMatrix bitmatrix = qrwriter.encode(qrdatas.toString(), BarcodeFormat.QR_CODE, 800, 800);
 
@@ -82,7 +77,7 @@ public class QRCodeServiceImplement implements QRCodeService {
 
         byte[] qrimg = outputstreem.toByteArray();
 
-        System.out.println("qr converted to byte");
+
 
         Optional<Ticket> temp = ticketrepository.findById(res.getTicketid());
 
@@ -93,7 +88,6 @@ public class QRCodeServiceImplement implements QRCodeService {
             updateticket.setQrcode(qrimg);
 
             ticketrepository.save(updateticket);
-            System.out.println("Qr updated");
 
         }
 
@@ -103,7 +97,6 @@ public class QRCodeServiceImplement implements QRCodeService {
         qrdatas.put("QRCode", base64code);
         qrdatas.put("Mobile", res.getBooking().getUser().getPhonenumber());
 
-        System.out.println("base64 workred");
 
         Map<String,Object> finalresponse = new HashMap<>();
 

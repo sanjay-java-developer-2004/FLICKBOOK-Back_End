@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.FLICKBOOK.Enum.TicketStatus;
+import com.example.FLICKBOOK.Exception.TicketException;
 import com.example.FLICKBOOK.Model.Booking;
 import com.example.FLICKBOOK.Model.Payment;
 import com.example.FLICKBOOK.Model.Seat;
@@ -38,7 +39,6 @@ public class TicketServiceImplement implements TicketService {
 
         Map<String, Object> temp = (Map<String, Object>) seatbookingservice.PayNow(datas);
 
-        System.out.println("Response geted to booking successfully ");
 
         Booking book = (Booking) temp.get("booking");
         Payment payments = (Payment) temp.get("payment");
@@ -54,23 +54,25 @@ public class TicketServiceImplement implements TicketService {
 
         Ticket ticketresponse = ticketrepository.save(tickets);
 
-        System.out.println("Ticket saved successfully");
 
         return ticketresponse;
 
     }
 
+
+
+
     // get by user id
 
     @Override
-    public Object getTicketsById(Integer userid) {
+    public Object getTicketsById(Integer userid) throws TicketException {
 
         List<Ticket> temp = ticketrepository.findByBookingUserUserid(userid);
 
         List<Map<String, Object>> response = new ArrayList<>();
 
         if (temp.isEmpty()) {
-            throw new RuntimeException("Tickets Not Founded For This User");
+            throw new TicketException("Tickets Not Founded For This User");
         } else {
 
             for (Ticket ticket : temp) {
@@ -89,10 +91,9 @@ public class TicketServiceImplement implements TicketService {
                 map.put("TicketId", ticket.getTicketid());
 
                 response.add(map);
-                System.out.println("Response Added");
+
             }
 
-            System.out.println("Response sended ");
             return response;
         }
 
@@ -102,12 +103,12 @@ public class TicketServiceImplement implements TicketService {
     
 
     @Override
-    public Map<String, Object> GetTicketByTId(Integer ticketid) {
+    public Map<String, Object> GetTicketByTId(Integer ticketid) throws TicketException {
 
         Optional<Ticket> tickets = ticketrepository.findById(ticketid);
 
         if (tickets.isEmpty()) {
-            throw new RuntimeException("Ticket NOt Founded");
+            throw new TicketException("Ticket NOt Founded");
 
         } else {
 

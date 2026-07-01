@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.FLICKBOOK.Exception.TheatreException;
 import com.example.FLICKBOOK.Model.Theatre;
 import com.example.FLICKBOOK.Model.User;
 import com.example.FLICKBOOK.Repository.TheatreRepository;
@@ -25,11 +26,14 @@ public class TheatreServiceImplement implements TheatreService {
    // register or add theatre
 
    @Override
-   public Object AddTheatre(Theatre theatre, Integer userId) throws Exception {
+   public Object AddTheatre(Theatre theatre, Integer userId) throws TheatreException {
 
       if (theatre.getTheatername() != null &&
             theatre.getTheaterlocation() != null &&
-            theatre.getTotalseats() != null) {
+            theatre.getTotalseats() != null &&
+             theatre.getTheatername() != "" &&
+             theatre.getTheaterlocation()!="" &&
+             userId != null ){
 
          Optional<User> tempuser = userrepository.findById(userId);
 
@@ -51,18 +55,18 @@ public class TheatreServiceImplement implements TheatreService {
 
             return response;
          } else {
-            throw new Exception("User Not Founded Pls SignUp First");
+            throw new TheatreException("User Not Founded Pls SignUp First");
          }
 
       } else {
-         throw new Exception("The Details Contain null Pls Enter Valid Details");
+         throw new TheatreException("The Details Contain null Pls Enter Valid Details And User Not Founded Login Again");
       }
    }
 
    // delete
 
    @Override
-   public String DeleteTheatre(String tname) throws Exception {
+   public String DeleteTheatre(String tname) throws TheatreException {
 
       Optional<Theatre> check = theatreRepository.findByTheaternameIgnoreCase(tname.trim());
 
@@ -70,18 +74,18 @@ public class TheatreServiceImplement implements TheatreService {
          theatreRepository.deleteById(check.get().getTheaterid());
          return "Theatre Deleted Successfully";
       } else {
-         throw new Exception("Theatre Not Found");
+         throw new TheatreException("Theatre Not Found");
       }
 
    }
 
    // find by name
    @Override
-   public Optional<Theatre> GetTheatre(String tname) throws Exception {
+   public Optional<Theatre> GetTheatre(String tname) throws TheatreException {
       Optional<Theatre> temp = theatreRepository.findByTheaternameIgnoreCase(tname.trim());
 
       if (temp.get().getTheatername() == null) {
-         throw new Exception("Theatre Not Available");
+         throw new TheatreException("Theatre Not Available");
       } else {
          return temp;
       }

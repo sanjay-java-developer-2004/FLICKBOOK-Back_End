@@ -52,9 +52,6 @@ public class HomeController {
     }
  
 
-
-
-
    //get movies or theatres by search
    @GetMapping("/search")
    public Map<String,Object> searchMovieAndTheatre(@RequestParam String keyword) throws HomeException{

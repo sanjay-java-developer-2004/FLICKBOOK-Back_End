@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.FLICKBOOK.Exception.TheatreException;
 import com.example.FLICKBOOK.Model.Theatre;
 import com.example.FLICKBOOK.Service.ServiceInter.TheatreService;
 
@@ -25,7 +26,7 @@ public class TheatreController {
 
     //Add Theatre  
     @PostMapping("/addTheatre")
-    public Object AddTheatre(@RequestBody Theatre theatre ,@RequestParam Integer userId) throws Exception{
+    public Object AddTheatre(@RequestBody Theatre theatre ,@RequestParam Integer userId) throws TheatreException{
       return theatreService.AddTheatre(theatre,userId);
 
     }
@@ -33,7 +34,7 @@ public class TheatreController {
 
     //get Theatre By Name
     @GetMapping("/getTheatreByName")
-    public Optional<Theatre> GetTheatre(@RequestParam String tname) throws Exception{
+    public Optional<Theatre> GetTheatre(@RequestParam String tname) throws TheatreException{
       return theatreService.GetTheatre(tname);
 
     }
@@ -41,7 +42,7 @@ public class TheatreController {
     //delete Theatre
     @DeleteMapping("/deleteTheatre")
     
-    public String DeleteTheatre (@RequestParam String tname) throws Exception {
+    public String DeleteTheatre (@RequestParam String tname) throws TheatreException {
       return theatreService.DeleteTheatre(tname);
     }
 

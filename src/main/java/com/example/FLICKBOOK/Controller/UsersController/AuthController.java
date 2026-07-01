@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.FLICKBOOK.Exception.AuthException;
 import com.example.FLICKBOOK.Service.ServiceInter.AuthService;
 
 @RestController
@@ -22,7 +23,7 @@ private AuthService authservice;
 //get dashboard
 
 @GetMapping("/Dashboard/{theatreid}")
-public Object getDashBoard(@PathVariable Integer theatreid) throws Exception{
+public Object getDashBoard(@PathVariable Integer theatreid) throws AuthException {
 
     return authservice.getDashBoard(theatreid);
     

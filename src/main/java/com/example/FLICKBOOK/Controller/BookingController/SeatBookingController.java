@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.FLICKBOOK.Service.ServiceInter.QRCodeService;
 import com.example.FLICKBOOK.Service.ServiceInter.WhatsAppService;
 
 
@@ -20,8 +19,6 @@ import com.example.FLICKBOOK.Service.ServiceInter.WhatsAppService;
 public class SeatBookingController {
     
 
-    @Autowired
-    private QRCodeService qrcodeservice;
 
     @Autowired
     private WhatsAppService whatsAppService;

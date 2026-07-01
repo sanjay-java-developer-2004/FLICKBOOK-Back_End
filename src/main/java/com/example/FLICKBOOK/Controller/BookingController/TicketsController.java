@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.FLICKBOOK.Model.Ticket;
+import com.example.FLICKBOOK.Exception.TicketException;
 import com.example.FLICKBOOK.Service.ServiceInter.TicketService;
 
 @RestController
@@ -22,13 +22,13 @@ public class TicketsController {
     // get tickets by userid
 
     @GetMapping("/getTickets/{userid}")
-    public Object getTicketsById(@PathVariable Integer userid) {
+    public Object getTicketsById(@PathVariable Integer userid) throws TicketException{
         return ticketservice.getTicketsById(userid);
     }
 
     // get tickets by id
     @GetMapping("/getticket/{ticketid}")
-    public ResponseEntity<Object> getTicket(@PathVariable Integer ticketid) {
+    public ResponseEntity<Object> getTicket(@PathVariable Integer ticketid) throws TicketException{
         try {
             return ResponseEntity.ok(ticketservice.GetTicketByTId(ticketid));
         } catch (RuntimeException e) {

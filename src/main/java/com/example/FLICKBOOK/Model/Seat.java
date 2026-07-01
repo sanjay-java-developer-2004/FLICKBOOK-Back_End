@@ -42,8 +42,9 @@ public class Seat {
 
 
 
+     //used to send json response  only not save db
     
-    @Transient     //used to send json response  only not save db
+    @Transient    
     private String movieName;
 
     @Transient

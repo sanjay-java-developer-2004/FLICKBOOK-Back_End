@@ -22,139 +22,135 @@ import com.example.FLICKBOOK.Service.ServiceInter.WhatsAppService;
 @Service
 public class WhatsAppServiceImplement implements WhatsAppService {
 
-    @Autowired
-    private QRCodeService qrservice;
+        @Autowired
+        private QRCodeService qrservice;
 
-    private static final String ACCESS_TOKEN = "EAF9pDkLtFe8BR77BURKhzpwHWruAE3TYf5jbRwq8Qn0obVeZBdxX24ZCJuQYj2w7q1rlNewBQLiMgxIihXdmnhyu0EzdfQEAcWqZCfi6oPUp7keU2GzUlSfVAEwRO0JF0ZAi4tBQoOh0v9ZBi5RRnb8VbeIL1w6nCiHxeO3zsKoeD6YqINzqsxcdatceS59lHrfZBywD4blzSiDGkhlBcdjhXcfvy5EzTgtkDZBkZCkn2S3B9s3SzG4o07k798mdZCgJUEaYCcwm9ZCg0biSY9KZBlX";
-    private static final String PHONE_NUMBER_ID = "1074610039080092";
+        private static final String ACCESS_TOKEN = "EAF9pDkLtFe8BR9e2UuMZCze6LYkiufa5JZC0jrjDwKhIHPLzqWqRpvTo9s2iPdAZAVuoryff4ZAtZAlYOili692ZCaDYPslUiLSRAsdP19ATcZBVeJF0kwctQUZAkYrxnFKlGlbmHdRDrbhznDYCAXWT68w33pqf5SZBJf54CWWwqPQiMKzr0VSfOIXMzZBen1F97ESuQJvMSG3Gy1B2shMcEq2VE09ILe6wyolxWcnvmvRMjzCgMNvjdeJh8GTBqKeZAT02EvrKt1zGIdjrv2OmHJY";
+        private static final String PHONE_NUMBER_ID = "1074610039080092";
 
-    @Override
-    public Map<String, Object> SendToWhatsApp(Map<String, Object> datas) throws Exception {
+        @Override
+        public Map<String, Object> SendToWhatsApp(Map<String, Object> datas) throws Exception {
 
-        Map<String, Object> res = qrservice.GenerateQRCode(datas);
+                Map<String, Object> res = qrservice.GenerateQRCode(datas);
 
-        // String mobilenumber = res.get("Mobile").toString();
-        String mobilenumber = "+91 9751620646";
-        String baseimg = res.get("QRCode").toString();
+                // String mobilenumber = res.get("Mobile").toString();
 
-        byte[] qrcode = Base64.getDecoder().decode(baseimg);
+                String mobilenumber = "+91 9751620646";
+                String baseimg = res.get("QRCode").toString();
 
-        System.out.println("Succcessfully Img Decoded");
+                byte[] qrcode = Base64.getDecoder().decode(baseimg);
 
-        // create file to tempstorage
-        File file = File.createTempFile("QRCODE", ".PNG");
-        Files.write(file.toPath(), qrcode);
+                // create file to tempstorage
+                File file = File.createTempFile("QRCODE", ".PNG");
+                Files.write(file.toPath(), qrcode);
 
-        String message = String.format("""
+                String message = String.format("""
 
-                           🎬 *FLICKBOOK - Booking Confirmed!*
-                ━━━━━━━━━━━━━━━━━
+                                               🎬 *FLICKBOOK - Booking Confirmed!*
+                                    ━━━━━━━━━━━━━━━━━
 
-                ✅ *Your ticket is confirmed!*
+                                    ✅ *Your ticket is confirmed!*
 
-                🎟️ *Ticket No:*  `%s`
-                🎥 *Movie:*  %s
-                🏛️ *Theatre:*  %s
-                🕐 *Show Time:*  %s
-                💺 *Seats:*  %s
+                                    🎟️ *Ticket No:*  `%s`
+                                    🎥 *Movie:*  %s
+                                    🏛️ *Theatre:*  %s
+                                    🕐 *Show Time:*  %s
+                                    💺 *Seats:*  %s
 
-                ━━━━━━━━━━━━━━━━━
-                📌 *Important:*
-                • Please arrive *15 minutes* before showtime
-                • Tickets are *non-refundable*
-                • Carry a valid ID proof
+                                    ━━━━━━━━━━━━━━━━━
+                                    📌 *Important:*
+                                    • Please arrive *15 minutes* before showtime
+                                    • Tickets are *non-refundable*
+                                    • Carry a valid ID proof
 
-                🙏 *Thank you for booking with FLICKBOOK!*
-                
-                _Enjoy your movie experience_ 🍿
-                       
-            """,
+                                    🙏 *Thank you for booking with FLICKBOOK!*
 
-                res.get("TicketNumber").toString(),
-                res.get("Tittle").toString(),
-                res.get("TheatreName").toString(),
-                res.get("ShowTime").toString(),
-                res.get("Seats").toString()
+                                    _Enjoy your movie experience_ 🍿
 
-        );
+                                """,
 
-        System.out.println("Successfully Strings Formated");
-        // upload to http header
+                                res.get("TicketNumber").toString(),
+                                res.get("Tittle").toString(),
+                                res.get("TheatreName").toString(),
+                                res.get("ShowTime").toString(),
+                                res.get("Seats").toString()
 
-        HttpHeaders uploadheader = new HttpHeaders();
+                );
 
-        uploadheader.setBearerAuth(ACCESS_TOKEN);
-        uploadheader.setContentType(MediaType.MULTIPART_FORM_DATA);
+                // upload to http header
 
-        System.out.println("Success fully created  uploader header");
+                HttpHeaders uploadheader = new HttpHeaders();
 
-        // multimapping
+                uploadheader.setBearerAuth(ACCESS_TOKEN);
+                uploadheader.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        MultiValueMap<String, Object> mediabody = new LinkedMultiValueMap<>();
+                // multimapping
 
-        mediabody.add("messaging_product", "whatsapp");
-        mediabody.add("file", new FileSystemResource(file));
+                MultiValueMap<String, Object> mediabody = new LinkedMultiValueMap<>();
 
-        System.out.println("Media body successfull");
+                mediabody.add("messaging_product", "whatsapp");
+                mediabody.add("file", new FileSystemResource(file));
 
-        // creating resttempleate
+                // creating resttempleate
 
-        RestTemplate resttemplate = new RestTemplate();
+                RestTemplate resttemplate = new RestTemplate();
 
-        // media response
+                try {
 
-        ResponseEntity<Map> mediaresponse = resttemplate.postForEntity(
-                "https://graph.facebook.com/v25.0/" + PHONE_NUMBER_ID + "/media",
-                new HttpEntity<>(mediabody, uploadheader),
-                Map.class);
+                        // media response
 
-        System.out.println("Success fully mediareponse uploaded ");
+                        ResponseEntity<Map> mediaresponse = resttemplate.postForEntity(
+                                        "https://graph.facebook.com/v25.0/" + PHONE_NUMBER_ID + "/media",
+                                        new HttpEntity<>(mediabody, uploadheader),
+                                        Map.class);
 
-        // geting id in mediaresponse
+                        if (mediaresponse.getBody() == null || mediaresponse.getBody().get("id") == null) {
+                                throw new Exception("No media id returned from WhatsApp media upload");
+                        }
 
-        String mediaId = mediaresponse.getBody().get("id").toString();
+                        // geting id in mediaresponse
 
-        System.out.println("successfully get media id");
+                        String mediaId = mediaresponse.getBody().get("id").toString();
 
-        // creating message httpheader for send to what'sapp this header and payload
-        // carry datas
+                        // creating message httpheader for send to what'sapp this header and payload
+                        // carry datas
 
-        HttpHeaders msgHeader = new HttpHeaders();
-        msgHeader.setBearerAuth(ACCESS_TOKEN);
-        msgHeader.setContentType(MediaType.APPLICATION_JSON);
+                        HttpHeaders msgHeader = new HttpHeaders();
+                        msgHeader.setBearerAuth(ACCESS_TOKEN);
+                        msgHeader.setContentType(MediaType.APPLICATION_JSON);
 
-        System.out.println("successfully created final header");
+                        // create payload
 
-        // create payload
+                        Map<String, Object> payload = Map.of(
+                                        "messaging_product", "whatsapp",
+                                        "to", mobilenumber,
+                                        "type", "document",
+                                        "document", Map.of(
+                                                        "id", mediaId,
+                                                        "filename", "TicketQR",
+                                                        "caption", message));
 
-        Map<String, Object> payload = Map.of(
-                "messaging_product", "whatsapp",
-                "to", mobilenumber,
-                "type", "document",
-                "document", Map.of(
-                        "id", mediaId,
-                        "filename", "TicketQR",
-                        "caption", message));
+                        // finnaly send to whatsapp
 
-        System.out.println("successfully payload");
+                        ResponseEntity<String> response = resttemplate.postForEntity(
+                                        "https://graph.facebook.com/v25.0/" + PHONE_NUMBER_ID + "/messages",
+                                        new HttpEntity<>(payload, msgHeader),
+                                        String.class);
 
-        // finnaly send to whatsapp
+                } catch (Exception e) {
+                        throw new Exception(
+                                        "Tickets Booked But We Are Faceing Issuess On Delevire Tickets Pls Collect Your Tickets in My Tickets",
+                                        e);
+                } finally {
+                        // deleting stored temp file
 
-        ResponseEntity<String> response = resttemplate.postForEntity(
-                "https://graph.facebook.com/v25.0/" + PHONE_NUMBER_ID + "/messages",
-                new HttpEntity<>(payload, msgHeader),
-                String.class);
+                        file.delete();
+                }
 
-        System.out.println("succesfully sended");
+                // return previous response
 
-        // deleting stored temp file
+                return res;
 
-        file.delete();
-
-        // return previous response
-
-        return res;
-
-    }
+        }
 
 }
